@@ -4,6 +4,9 @@ import random as rnd
 # Initialize Pygame
 pg.init()
 
+# Background
+background = pg.image.load('background.png')
+
 # Create a window
 screen = pg.display.set_mode((800, 600))
 
@@ -19,9 +22,10 @@ playerY = 425
 
 # Enemy position and image
 enemyIm = pg.image.load('enemy.png')
-enemyX = 300
-enemyY = 200
-enemyX_change = 0
+enemyX = rnd.randint(0, 800)
+enemyY = rnd.randint(50, 150)
+enemyX_change = 4
+enemyY_change = 40
 
 
 def draw_player():
@@ -36,9 +40,6 @@ def get_color():
     return rnd.randint(150, 190)
 
 
-def move_enemy():
-    pass
-
 playerChange = 0
 # Game loop
 running = True
@@ -47,34 +48,45 @@ while running:
     # Fill screen with color
     screen.fill((0, 128, 128))
 
+    # Set background
+    screen.blit(background, (0, 0))
+
     for event in pg.event.get():
         if event.type == pg.QUIT:
             running = False
 
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_LEFT:
-                playerChange = -1
+                playerChange = -15
             if event.key == pg.K_RIGHT:
-                playerChange = 1
+                playerChange = 15
         if event.type == pg.KEYUP:
             if event.key == pg.K_LEFT or event.key == pg.K_RIGHT:
                 playerChange = 0
 
+    draw_player()
     playerX += playerChange
+
+    # Checking boundaries for player
     if playerX < 0:
         playerX = 0
     elif playerX > 736:
         playerX = 736
 
-    draw_player()
+    # Checking boundaries for enemies
+    if enemyX < 0:
+        enemyX = 0
+    elif enemyX > 736:
+        enemyX = 736
+
+    if enemyX <= 0:
+        enemyX_change = 4
+        enemyY += enemyY_change
+    elif enemyX >= 736:
+        enemyX_change = -4
+        enemyY += enemyY_change
+
     draw_enemy()
-    if 100 < enemyX < 400:
-        enemyX += 0.1
-    else:
-        enemyX = rnd.randint(100, 300)
-    if 100 < enemyY < 400:
-        enemyY += 0.1
-    else:
-        enemyY = rnd.randint(100, 300)
+    enemyX += enemyX_change
 
     pg.display.update()
