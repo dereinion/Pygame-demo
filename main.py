@@ -27,6 +27,16 @@ enemyY = rnd.randint(50, 150)
 enemyX_change = 4
 enemyY_change = 40
 
+# Bullet position and image
+bulletIm = pg.image.load('bullet.png')
+bulletX = 0
+bulletY = 480
+bulletX_change = 0
+bulletY_change = 20
+# 'ready' - bullet is loaded
+# 'fire' - bullet is moving on screen
+bulletState = 'ready'
+
 
 def draw_player():
     screen.blit(playerIm, (round(playerX), round(playerY)))
@@ -34,6 +44,12 @@ def draw_player():
 
 def draw_enemy():
     screen.blit(enemyIm, (round(enemyX), round(enemyY)))
+
+
+def fire(x, y):
+    global bulletState
+    bulletState = 'fire'
+    screen.blit(bulletIm, (x + 16, y + 10))
 
 
 def get_color():
@@ -60,9 +76,23 @@ while running:
                 playerChange = -15
             if event.key == pg.K_RIGHT:
                 playerChange = 15
+            if event.key == pg.K_SPACE:
+                if bulletState == 'ready':
+                    bulletX = playerX
+                    fire(bulletX, bulletY)
+
         if event.type == pg.KEYUP:
             if event.key == pg.K_LEFT or event.key == pg.K_RIGHT:
                 playerChange = 0
+
+    if bulletY <= 0:
+        bulletState = 'ready'
+        bulletY = 440
+
+    # Bullet movement
+    if bulletState == 'fire':
+        fire(bulletX, bulletY)
+        bulletY -= bulletY_change
 
     draw_player()
     playerX += playerChange
@@ -88,5 +118,8 @@ while running:
 
     draw_enemy()
     enemyX += enemyX_change
+
+
+
 
     pg.display.update()
